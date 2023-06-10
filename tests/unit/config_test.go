@@ -1,7 +1,6 @@
 package unit
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -35,11 +34,16 @@ func TestLoadConfig(t *testing.T) {
 	defer os.Remove(tempFile.Name())
 
 	// Write the test data to the temporary file
-	data := []byte(`{
+	file, err := os.OpenFile(tempFile.Name(), os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(`{
 		"apiKey": "` + expectedAPIKey + `",
 		"apiSecret": "` + expectedAPISecret + `"
 	}`)
-	err = ioutil.WriteFile(tempFile.Name(), data, 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
