@@ -1,0 +1,23 @@
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  merge-strategy:
+    runs-on: alpine:latest
+    if: github.event.action != 'closed'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: latest
+      
+      - name: Run tests
+        run: go test -v ./tests
