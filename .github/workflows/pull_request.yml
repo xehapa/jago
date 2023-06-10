@@ -8,7 +8,7 @@ on:
       - hotfix/*
 
 jobs:
-  build:
+  test:
     runs-on: alpine:latest
     steps:
       - uses: actions/checkout@v3
