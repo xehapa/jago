@@ -11,6 +11,13 @@ type Config struct {
 	APISecret string `json:"apiSecret"`
 }
 
+func NewConfig(apiKey, apiSecret string) *Config {
+	return &Config{
+		APIKey:    apiKey,
+		APISecret: apiSecret,
+	}
+}
+
 func LoadConfig(filename string) *Config {
 	file, err := os.Open(filename)
 
