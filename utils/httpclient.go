@@ -10,15 +10,15 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-// Client represents the HTTP client implementatio
+// Client represents the HTTP client implementation
 type Client struct {
-	client *http.Client
+	HTTPClient HTTPClient
 }
 
 // NewHTTPClient creates a new instance of the HTTP client
-func NewHTTPClient() HTTPClient {
+func NewHTTPClient() *Client {
 	return &Client{
-		client: &http.Client{
+		HTTPClient: &http.Client{
 			Timeout: time.Second * 10,
 		},
 	}
@@ -26,5 +26,5 @@ func NewHTTPClient() HTTPClient {
 
 // Do sends an HTTP request and returns the response
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
-	return c.client.Do(req)
+	return c.HTTPClient.Do(req)
 }

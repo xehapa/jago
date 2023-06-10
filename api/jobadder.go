@@ -7,13 +7,17 @@ import (
 type JobAdderClient struct {
 	apiKey     string
 	apiSecret  string
-	httpClient utils.HTTPClient
+	HTTPClient utils.HTTPClient // Add the HTTPClient field
 }
 
-func NewJobadderClient(apiKey, apiSecret string) *JobAdderClient {
+func NewJobAdderClient(apiKey, apiSecret string) *JobAdderClient {
 	return &JobAdderClient{
 		apiKey:     apiKey,
 		apiSecret:  apiSecret,
-		httpClient: utils.NewHTTPClient(),
+		HTTPClient: utils.NewHTTPClient(), // Initialize the HTTPClient field
 	}
+}
+
+func (c *JobAdderClient) SetHTTPClient(httpClient utils.HTTPClient) {
+	c.HTTPClient = httpClient
 }
