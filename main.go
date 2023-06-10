@@ -10,6 +10,10 @@ import (
 )
 
 func main() {
+	RunMain()
+}
+
+func RunMain() {
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Enter client ID: ")
@@ -20,5 +24,5 @@ func main() {
 
 	cfg := config.NewConfig(clientID, clientSecret)
 
-	log.Print("Your Client ID is:" + cfg.APIKey + " and your Client Secret is " + cfg.APISecret)
+	log.Printf("Your Client ID is: %s and your Client Secret is %s", cfg.APIKey, cfg.APISecret)
 }
