@@ -24,3 +24,4 @@ go.work
 project_structure.txt
 
 .env
+!.env.test
