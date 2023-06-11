@@ -1,5 +1,9 @@
 package models
 
+const ClientId string = "dfuha7yjaakeroeydmikgi6hky"
+const ClientSecret string = "ah6hsseus7suhiduokjy2sxfn4zvhkg7o5bzge5hbf2tuntfhgnq"
+const AuthURL string = "https://id.jobadder.com/connect"
+
 type AuthRequest struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`

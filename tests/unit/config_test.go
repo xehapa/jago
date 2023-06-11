@@ -1,34 +1,17 @@
 package unit
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 
-	"github.com/joho/godotenv"
 	"github.com/xehapa/jago/config"
-	"github.com/xehapa/jago/utils"
+	"github.com/xehapa/jago/models"
 )
 
 func TestNewConfig(t *testing.T) {
-	// Get the project root directory
-	projectRoot := utils.GetProjectRoot()
-	if projectRoot == "" {
-		t.Fatal("Failed to determine project root directory")
-	}
+	clientId := models.ClientId
+	clientSecret := models.ClientSecret
 
-	// Construct the absolute file path to the .env.test file
-	envFile := filepath.Join(projectRoot, ".env.test")
-
-	err := godotenv.Load(envFile)
-	if err != nil {
-		t.Fatal("Error loading .env.test file:", err)
-	}
-
-	cfg := config.NewConfig(&envFile)
-
-	clientId := os.Getenv("CLIENT_ID")
-	clientSecret := os.Getenv("CLIENT_SECRET")
+	cfg := config.NewConfig()
 
 	if cfg.ClientId != clientId {
 		t.Errorf("Expected ClientId to be %s, but got %s", clientId, cfg.ClientId)

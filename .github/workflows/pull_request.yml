@@ -1,29 +1,22 @@
-name: Test
+name: Go
 
 on:
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
-      - reopened
   push:
     branches:
       - bugfix/*
       - feature/*
       - hotfix/*
-      - dev*
-      - master*
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+      
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v2
         with:
           go-version: '>=1.20.5'
-
+      
       - name: Run tests
-        run: go test -v ./tests/* --failfast
+        run: go test -v ./tests/*

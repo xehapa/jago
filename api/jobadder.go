@@ -30,5 +30,7 @@ func (j *JobAdderClient) GetAccessToken(refreshToken string) (*models.RefreshTok
 		return &resp, err
 	}
 
+	Auth(j.ClientID, j.ClientSecret)
+
 	return nil, nil
 }
