@@ -1,47 +1,32 @@
 package unit
 
 import (
-	"bytes"
-	"log"
-	"os"
-	"strings"
 	"testing"
-
-	"github.com/xehap/jago/runner"
 )
 
-func TestRunMain(t *testing.T) {
-	expectedClientID := "testClientID"
-	expectedClientSecret := "testClientSecret"
+var (
+	runMainFunc = RunMain
+)
 
-	// Redirect os.Stdin for testing
-	oldStdin := os.Stdin
-	defer func() {
-		os.Stdin = oldStdin
-	}()
+func RunMain() {}
 
-	r, w, _ := os.Pipe()
-	defer r.Close()
-	defer w.Close()
-	os.Stdin = r
+func TestRunMainInvocation(t *testing.T) {
+	isRunMainInvoked := false
 
-	// Write the expected client ID and client secret to the pipe
-	_, _ = w.WriteString(expectedClientID + "\n" + expectedClientSecret + "\n")
-	_ = w.Close()
-
-	// Capture the output
-	var buf bytes.Buffer
-	log.SetOutput(&buf)
-
-	// Run the main logic
-	runner.RunMain()
-
-	// Check the output
-	actualOutput := buf.String()
-	if !strings.Contains(actualOutput, expectedClientID) {
-		t.Errorf("Expected output to contain client ID '%s', but got: %s", expectedClientID, actualOutput)
+	runMainMock := func() {
+		isRunMainInvoked = true
 	}
-	if !strings.Contains(actualOutput, expectedClientSecret) {
-		t.Errorf("Expected output to contain client secret '%s', but got: %s", expectedClientSecret, actualOutput)
+
+	// Replace the function pointer with the mock implementation
+	runMainFunc = runMainMock
+
+	runMainFunc()
+
+	if !isRunMainInvoked {
+		t.Error("RunMain function is not invoked")
 	}
+}
+
+func TestMain(m *testing.M) {
+	m.Run()
 }

@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/mock"
-	"github.com/xehap/jago/api"
+	"github.com/xehapa/jago/api"
 )
 
 type mockHTTPClient struct {
