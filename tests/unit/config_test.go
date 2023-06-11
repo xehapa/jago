@@ -2,14 +2,20 @@ package unit
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/xehapa/jago/config"
 )
 
 func TestNewConfig(t *testing.T) {
-	os.Setenv("TEST_ENV", "true")
-	envFile := "../../.env.test"
+	basePath, err := os.Getwd()
+
+	if err != nil {
+		t.Fatal("Error getting base path:", err)
+	}
+	projectRoot := filepath.Dir(filepath.Dir(basePath))
+	envFile := filepath.Join(projectRoot, ".env.test")
 
 	cfg := config.NewConfig(&envFile)
 
