@@ -2,22 +2,14 @@ package unit
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/xehapa/jago/config"
-	"github.com/xehapa/jago/utils"
 )
 
 func TestNewConfig(t *testing.T) {
-	// Get the project root directory
-	projectRoot := utils.GetProjectRoot()
-	if projectRoot == "" {
-		t.Fatal("Failed to determine project root directory")
-	}
-
 	// Construct the absolute file path to the .env.test file
-	envFile := filepath.Join(projectRoot, ".env.test")
+	envFile := ".env.test"
 
 	cfg := config.NewConfig(&envFile)
 
