@@ -3,19 +3,19 @@ package unit
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/xehapa/jago/config"
 )
 
 func TestNewConfig(t *testing.T) {
-	basePath, err := os.Getwd()
+	// Get the current directory (where the test file is located)
+	_, filename, _, _ := runtime.Caller(0)
+	testDir := filepath.Dir(filename)
 
-	if err != nil {
-		t.Fatal("Error getting base path:", err)
-	}
-	projectRoot := filepath.Dir(filepath.Dir(basePath))
-	envFile := filepath.Join(projectRoot, ".env.test")
+	// Construct the absolute file path to the .env.test file
+	envFile := filepath.Join(testDir, "..", "..", ".env.test")
 
 	cfg := config.NewConfig(&envFile)
 
