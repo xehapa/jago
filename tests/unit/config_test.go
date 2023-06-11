@@ -1,17 +1,20 @@
 package unit
 
 import (
+	"os"
 	"testing"
 
 	"github.com/xehapa/jago/config"
-	"github.com/xehapa/jago/models"
 )
 
 func TestNewConfig(t *testing.T) {
-	clientId := models.ClientId
-	clientSecret := models.ClientSecret
+	os.Setenv("TEST_ENV", "true")
+	envFile := "../../.env.test"
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(&envFile)
+
+	clientId := os.Getenv("CLIENT_ID")
+	clientSecret := os.Getenv("CLIENT_SECRET")
 
 	if cfg.ClientId != clientId {
 		t.Errorf("Expected ClientId to be %s, but got %s", clientId, cfg.ClientId)

@@ -1,17 +1,37 @@
 package config
 
 import (
-	"github.com/xehapa/jago/models"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	ClientId     string `json:"apiKey"`
-	ClientSecret string `json:"apiSecret"`
+	ClientId     string
+	ClientSecret string
+	AuthUrl      string
 }
 
-func NewConfig() *Config {
+func NewConfig(envFile *string) *Config {
+	if envFile == nil {
+		env := ".env"
+		envFile = &env
+	}
+
+	err := godotenv.Load(*envFile)
+
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
+	}
+
+	clientId := os.Getenv("CLIENT_ID")
+	clientSecret := os.Getenv("CLIENT_SECRET")
+	authUrl := os.Getenv("AUTH_URL")
+
 	return &Config{
-		ClientId:     models.ClientId,
-		ClientSecret: models.ClientSecret,
+		ClientId:     clientId,
+		ClientSecret: clientSecret,
+		AuthUrl:      authUrl,
 	}
 }
