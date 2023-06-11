@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/xehapa/jago/api"
-	"github.com/xehapa/jago/config"
 )
 
 type AccessTokenProvider interface {
@@ -29,11 +28,10 @@ func RunMain() {
 	var refreshToken string
 	fmt.Print("Enter Refresh Token: ")
 	refreshToken, _ = readString()
-	config := config.NewConfig(nil)
-	client := api.NewJobAdderClient(config.ClientId, config.ClientSecret)
+	client := api.NewJobAdderClient()
 
-	// Get access token
 	refreshTokenResponse, err := client.GetAccessToken(refreshToken)
+
 	if err != nil {
 		log.Fatalf("failed to get access token: %v", err)
 	}
@@ -45,6 +43,23 @@ func RunMain() {
 
 	fmt.Println("Response:")
 	fmt.Println(string(jsonResponse))
+
+	client.ApiUrl = refreshTokenResponse.ApiUrl
+	client.AccessToken = refreshTokenResponse.AccessToken
+
+	placements, err := client.GetPlacements()
+
+	if err != nil {
+		log.Fatalf("failed to get placements: %v", err)
+	}
+
+	itemsJSON, err := json.MarshalIndent(placements, "", "  ")
+
+	if err != nil {
+		log.Fatal("failed to marshal Items as JSON: %w", err)
+	}
+
+	fmt.Println(string(itemsJSON))
 }
 
 func readString() (string, error) {

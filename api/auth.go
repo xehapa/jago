@@ -12,7 +12,7 @@ import (
 )
 
 func (j *JobAdderClient) ExchangeRefreshToken(refreshToken string) (models.RefreshTokenResponse, error) {
-	config := config.NewConfig(nil)
+	config := config.NewConfig(false)
 
 	headers := map[string]string{
 		"Content-Type": "application/x-www-form-urlencoded",
@@ -20,7 +20,7 @@ func (j *JobAdderClient) ExchangeRefreshToken(refreshToken string) (models.Refre
 
 	// Create the request body
 	body := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=refresh_token&refresh_token=%s",
-		j.ClientID, j.ClientSecret, refreshToken)
+		config.ClientId, config.ClientSecret, refreshToken)
 
 	// Send the request using the HTTP client
 	resp, err := utils.NewHTTPClient().SendRequest(http.MethodPost, config.AuthUrl, []byte(body), headers)

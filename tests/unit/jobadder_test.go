@@ -1,14 +1,17 @@
 package unit
 
 import (
-	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
+	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/xehapa/jago/api"
+	"github.com/xehapa/jago/models"
 )
 
 type mockHTTPClient struct {
@@ -21,63 +24,80 @@ func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 func TestJobAdderClient_Do(t *testing.T) {
-	// Create a mock HTTP client
 	mockClient := new(mockHTTPClient)
 	mockResponseBody := "Mock response"
 	mockResponse := &http.Response{
 		StatusCode: http.StatusOK,
-		Body:       newReadCloser(mockResponseBody),
+		Body:       io.NopCloser(strings.NewReader(mockResponseBody)),
 	}
 	mockClient.On("Do", mock.Anything).Return(mockResponse, nil)
 
-	// Create a JobAdderClient instance with the mock HTTP client
-	client := api.NewJobAdderClient("apiKey", "apiSecret")
+	client := api.NewJobAdderClient()
 	client.HTTPClient = mockClient
+	req, err := http.NewRequest("GET", "https://test.123", nil)
 
-	// Create an HTTP request
-	req, err := http.NewRequest("GET", "http://example.com", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Call the Do method on the JobAdderClient
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer resp.Body.Close()
 
-	// Read the response body
-	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
-	body := buf.String()
 
-	// Assert the response status code
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected status code %d, got %d", http.StatusOK, resp.StatusCode)
 	}
 
-	// Assert the response body
 	expectedBody := mockResponseBody
-	if body != expectedBody {
-		t.Errorf("Expected response body '%s', got '%s'", expectedBody, body)
+	if string(body) != expectedBody {
+		t.Errorf("Expected response body '%s', got '%s'", expectedBody, string(body))
 	}
 
-	// Assert that the mock HTTP client's Do method was called
 	mockClient.AssertCalled(t, "Do", mock.Anything)
 }
 
-type readCloser struct {
-	io.Reader
-}
+func TestJobAdderClient_GetPlacements(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		response := struct {
+			Items []models.Placement `json:"items"`
+		}{
+			Items: []models.Placement{
+				{PlacementID: 1, JobTitle: "Job 1"},
+				{PlacementID: 2, JobTitle: "Job 2"},
+			},
+		}
 
-func (rc *readCloser) Close() error {
-	return nil
-}
+		w.Header().Set("Content-Type", "application/json")
 
-func newReadCloser(s string) io.ReadCloser {
-	return &readCloser{strings.NewReader(s)}
+		err := json.NewEncoder(w).Encode(response)
+
+		if err != nil {
+			t.Fatal(err)
+		}
+	}))
+	defer server.Close()
+
+	client := api.NewJobAdderClient()
+	client.ApiUrl = server.URL + "/v2/"
+
+	placements, err := client.GetPlacements()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedPlacements := []models.Placement{
+		{PlacementID: 1, JobTitle: "Job 1"},
+		{PlacementID: 2, JobTitle: "Job 2"},
+	}
+
+	if !reflect.DeepEqual(expectedPlacements, placements) {
+		t.Errorf("Expected placements do not match actual placements")
+	}
 }

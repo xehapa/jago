@@ -1,7 +1,11 @@
 package models
 
 type Job struct {
-	ID          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	JobID    int `json:"jobId"`
+	JobTitle string
+	Company  Company
+	Contact  Contact
+	Status   Status
+	Source   string
+	Owner    User
 }
