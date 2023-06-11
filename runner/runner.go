@@ -29,7 +29,7 @@ func RunMain() {
 	var refreshToken string
 	fmt.Print("Enter Refresh Token: ")
 	refreshToken, _ = readString()
-	config := config.NewConfig()
+	config := config.NewConfig(nil)
 	client := api.NewJobAdderClient(config.ClientId, config.ClientSecret)
 
 	// Get access token
