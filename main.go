@@ -1,6 +1,6 @@
 package main
 
-import "github.com/xehap/jago/runner"
+import "github.com/xehapa/jago/runner"
 
 func main() {
 	runner.RunMain()

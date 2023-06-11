@@ -1,39 +1,17 @@
 package config
 
 import (
-	"encoding/json"
-	"log"
-	"os"
+	"github.com/xehapa/jago/models"
 )
 
 type Config struct {
-	APIKey    string `json:"apiKey"`
-	APISecret string `json:"apiSecret"`
+	ClientId     string `json:"apiKey"`
+	ClientSecret string `json:"apiSecret"`
 }
 
-func NewConfig(apiKey, apiSecret string) *Config {
+func NewConfig() *Config {
 	return &Config{
-		APIKey:    apiKey,
-		APISecret: apiSecret,
+		ClientId:     models.ClientId,
+		ClientSecret: models.ClientSecret,
 	}
-}
-
-func LoadConfig(filename string) *Config {
-	file, err := os.Open(filename)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer file.Close()
-
-	decoder := json.NewDecoder(file)
-	config := &Config{}
-	err = decoder.Decode(&config)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return config
 }

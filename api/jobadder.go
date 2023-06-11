@@ -1,23 +1,36 @@
 package api
 
 import (
-	"github.com/xehap/jago/utils"
+	"github.com/xehapa/jago/models"
+	"github.com/xehapa/jago/utils"
 )
 
 type JobAdderClient struct {
-	apiKey     string
-	apiSecret  string
-	HTTPClient utils.HTTPClient // Add the HTTPClient field
+	ClientID     string
+	ClientSecret string
+	HTTPClient   utils.HTTPClient // Add the HTTPClient field
 }
 
-func NewJobAdderClient(apiKey, apiSecret string) *JobAdderClient {
+func NewJobAdderClient(clientId, clientSecret string) *JobAdderClient {
 	return &JobAdderClient{
-		apiKey:     apiKey,
-		apiSecret:  apiSecret,
-		HTTPClient: utils.NewHTTPClient(), // Initialize the HTTPClient field
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		HTTPClient:   utils.NewHTTPClient(), // Initialize the HTTPClient field
 	}
 }
 
 func (c *JobAdderClient) SetHTTPClient(httpClient utils.HTTPClient) {
 	c.HTTPClient = httpClient
+}
+
+// GetAccessToken retrieves the access token using the client ID and secret
+func (j *JobAdderClient) GetAccessToken(refreshToken string) (*models.RefreshTokenResponse, error) {
+	if refreshToken != "" {
+		resp, err := j.ExchangeRefreshToken(refreshToken)
+		return &resp, err
+	}
+
+	Auth(j.ClientID, j.ClientSecret)
+
+	return nil, nil
 }
