@@ -5,17 +5,25 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/joho/godotenv"
 	"github.com/xehapa/jago/config"
+	"github.com/xehapa/jago/utils"
 )
 
 func TestNewConfig(t *testing.T) {
-	basePath, err := os.Getwd()
-
-	if err != nil {
-		t.Fatal("Error getting base path:", err)
+	// Get the project root directory
+	projectRoot := utils.GetProjectRoot()
+	if projectRoot == "" {
+		t.Fatal("Failed to determine project root directory")
 	}
 
-	envFile := filepath.Join(basePath, ".env.test")
+	// Construct the absolute file path to the .env.test file
+	envFile := filepath.Join(projectRoot, ".env.test")
+
+	err := godotenv.Load(envFile)
+	if err != nil {
+		t.Fatal("Error loading .env.test file:", err)
+	}
 
 	cfg := config.NewConfig(&envFile)
 
