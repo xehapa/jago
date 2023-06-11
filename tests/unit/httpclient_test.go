@@ -1,11 +1,13 @@
 package unit
 
 import (
+	"bytes"
+	"io"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/xehap/jago/utils"
+	"github.com/xehapa/jago/utils"
 )
 
 type MockHTTPClient struct {
@@ -63,5 +65,36 @@ func TestNewHTTPClient(t *testing.T) {
 	expectedTimeout := time.Second * 10
 	if timeout != expectedTimeout {
 		t.Errorf("Expected client timeout to be %v, but got: %v", expectedTimeout, timeout)
+	}
+}
+
+func TestClientSendRequest(t *testing.T) {
+	// Create a mock HTTP response
+	responseBody := []byte("Mock response")
+	response := &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       io.NopCloser(bytes.NewReader(responseBody)),
+	}
+
+	// Create a client instance with the mock HTTP client
+	client := &utils.Client{
+		HTTPClient: &MockHTTPClient{
+			response: response,
+			err:      nil,
+		},
+	}
+
+	// Perform the request
+	resp, err := client.SendRequest(http.MethodGet, "http://example.com", nil, nil)
+
+	// Assert the response and error
+	if err != nil {
+		t.Fatalf("Expected no error, but got: %v", err)
+	}
+
+	// Assert the response body
+	expectedBody := "Mock response"
+	if string(resp) != expectedBody {
+		t.Errorf("Expected response body '%s', but got: '%s'", expectedBody, string(resp))
 	}
 }
