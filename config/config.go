@@ -3,8 +3,10 @@ package config
 import (
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
+	"github.com/xehapa/jago/utils"
 )
 
 type Config struct {
@@ -13,13 +15,20 @@ type Config struct {
 	AuthUrl      string
 }
 
-func NewConfig(envFile *string) *Config {
-	if envFile == nil {
-		env := ".env"
-		envFile = &env
+func NewConfig(isTest bool) *Config {
+	projectRoot := utils.GetProjectRoot()
+	if projectRoot == "" {
+		log.Fatal("Failed to determine project root directory")
 	}
 
-	err := godotenv.Load(*envFile)
+	envFile := ".env"
+
+	if isTest {
+		envFile = envFile + ".test"
+	}
+
+	env := filepath.Join(projectRoot, envFile)
+	err := godotenv.Load(env)
 
 	if err != nil {
 		log.Fatal("Error loading .env file:", err)
