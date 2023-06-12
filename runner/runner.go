@@ -2,11 +2,11 @@ package runner
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/xehapa/jago/api"
 )
@@ -29,6 +29,7 @@ func RunMain() {
 	fmt.Print("Enter Refresh Token: ")
 	refreshToken, _ = readString()
 	client := api.NewJobAdderClient()
+	timeStart := time.Now()
 
 	refreshTokenResponse, err := client.GetAccessToken(refreshToken)
 
@@ -36,30 +37,18 @@ func RunMain() {
 		log.Fatalf("failed to get access token: %v", err)
 	}
 
-	jsonResponse, err := json.MarshalIndent(refreshTokenResponse, "", "  ")
-	if err != nil {
-		log.Fatalf("failed to marshal response to JSON: %v", err)
-	}
-
-	fmt.Println("Response:")
-	fmt.Println(string(jsonResponse))
-
 	client.ApiUrl = refreshTokenResponse.ApiUrl
 	client.AccessToken = refreshTokenResponse.AccessToken
 
-	placements, err := client.GetPlacements()
+	_, err = client.GetPlacements()
 
 	if err != nil {
 		log.Fatalf("failed to get placements: %v", err)
 	}
 
-	itemsJSON, err := json.MarshalIndent(placements, "", "  ")
+	elapsedTime := time.Since(timeStart).Round(time.Second)
 
-	if err != nil {
-		log.Fatal("failed to marshal Items as JSON: %w", err)
-	}
-
-	fmt.Println(string(itemsJSON))
+	fmt.Printf("Elapsed time: %s\n", elapsedTime)
 }
 
 func readString() (string, error) {
