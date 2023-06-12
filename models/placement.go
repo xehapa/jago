@@ -26,4 +26,16 @@ type Placement struct {
 	CreatedAt   string `json:"createdAt"`
 	UpdatedBy   User
 	UpdatedAt   string `json:"updatedAt"`
+	Links       struct {
+		Self string
+	}
+}
+
+type EnhancedPlacement struct {
+	PlacementId   int
+	JobId         int
+	JobOwnerName  string
+	JobOwnerEmail string
+	Links         string
+	CreatedDate   string
 }

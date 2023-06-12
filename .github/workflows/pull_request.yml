@@ -12,7 +12,6 @@ on:
       - hotfix/*
       - dev*
       - master*  
-    
 
 jobs:
   test:
