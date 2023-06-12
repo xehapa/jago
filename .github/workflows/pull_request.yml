@@ -6,13 +6,13 @@ on:
       - opened
       - synchronize
       - reopened
+  push:
     branches:
       - bugfix/*
       - feature/*
       - hotfix/*
       - dev*
       - master*  
-    
 
 jobs:
   test:
