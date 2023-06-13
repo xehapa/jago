@@ -1,17 +1,14 @@
 name: Test
 
 on:
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  pull_request:
     branches:
       - bugfix/*
       - feature/*
       - hotfix/*
       - dev*
-      - master*  
+      - master*
+      - release/*
 
 jobs:
   test:

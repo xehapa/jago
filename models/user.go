@@ -1,13 +1,16 @@
 package models
 
 type User struct {
-	UserID    int    `json:"userId"`
+	UserId    int    `json:"userId"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
-	Position  string
-	Email     string
-	Phone     string
-	Mobile    string
-	Inactive  bool
-	Deleted   bool
+	Position  string `json:"position"`
+	JobTitle  string `json:"jobTitle"`
+	Email     string `json:"email"`
+	Mobile    string `json:"mobile"`
+	Links     struct {
+		Self string `json:"self"`
+	} `json:"links"`
+	Deleted  bool `json:"deleted"`
+	Inactive bool `json:"inactive"`
 }

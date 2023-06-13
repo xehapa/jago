@@ -1,8 +1,9 @@
 # Jobadder API Utility Written In Go
 
-[![Test](https://github.com/xehapaa/jago/actions/workflows/pull_request.yml/badge.svg)](https://github.com/xehapaa/jago/actions/workflows/pull_request.yml)
+[![Test](https://github.com/xehapa/jago/actions/workflows/pull_request.yml/badge.svg?branch=dev)](https://github.com/xehapa/jago/actions/workflows/pull_request.yml)
 
---- Folder Structure ---
+## Folder Structure
+```
 LICENSE
 README.md
 .env.test
@@ -28,3 +29,4 @@ main.go
         └── main_test.go
 [utils]
     └── httpclient.go
+```

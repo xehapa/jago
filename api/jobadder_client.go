@@ -1,10 +1,8 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/url"
-	"time"
+	"log"
 
 	"github.com/xehapa/jago/models"
 	"github.com/xehapa/jago/utils"
@@ -35,71 +33,64 @@ func (j *JobAdderClient) GetAccessToken(refreshToken string) (*models.RefreshTok
 	return nil, nil
 }
 
-func (j *JobAdderClient) GetPlacements() ([]models.Placement, error) {
-	baseURL, err := url.Parse(j.ApiUrl + "placements")
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse base URL: %w", err)
-	}
-
-	queryParams := url.Values{}
-	createdAt := time.Now().UTC().AddDate(-1, 0, 0).Format(time.RFC3339)
-	queryParams.Set("limit", "1000")
-	queryParams.Set("createdAt", fmt.Sprintf(">%s", createdAt))
-	baseURL.RawQuery = queryParams.Encode()
-
-	headers := make(map[string]string)
-	headers["Authorization"] = "Bearer " + j.AccessToken
-	headers["Content-Type"] = "application/json"
-
-	allPlacements := make([]models.Placement, 0)
-	page := 1
-	totalPlacements := 0
+func (j *JobAdderClient) GetPlacements() []models.Placement {
+	allPlacements, err := GetPlacements(j.ApiUrl, j.AccessToken)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temporary file: %w", err)
+		log.Fatal(err)
 	}
 
-	for {
-		fmt.Println("API URL:", baseURL.String())
-		responseBody, err := utils.NewHTTPClient().SendRequest("GET", baseURL.String(), nil, headers)
+	fmt.Printf("Total Placements Fetched: %d\n", len(allPlacements))
 
-		if err != nil {
-			return nil, fmt.Errorf("failed to send request: %w", err)
+	return allPlacements
+}
+
+func (j *JobAdderClient) GetPlacementDetail(placements []models.EnhancedPlacement, refreshToken string) models.EnhancedPlacementDetail {
+	i := 0
+	var data models.EnhancedPlacementDetail
+	var lists []models.EnhancedPlacementDetail
+
+	for _, placement := range placements {
+		placementDetail := FetchDetailedPlacement(placement.Link, j.AccessToken)
+
+		data = models.EnhancedPlacementDetail{
+			PlacementID: placementDetail.PlacementID,
+			JobID:       placementDetail.Job.JobID,
+			JobTitle:    placementDetail.Job.JobTitle,
+			JobOwner: struct {
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			}{
+				Name:  placementDetail.Job.Owner.FirstName + " " + placementDetail.Job.Owner.LastName,
+				Email: placementDetail.Job.Owner.Email,
+			},
 		}
 
-		var response models.PlacementResponse
-		err = json.Unmarshal(responseBody, &response)
+		var recruiters = make([]struct {
+			Name  string `json:"name"`
+			Email string `json:"email"`
+		}, 0)
 
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse response body: %w", err)
+		for _, recruiter := range placementDetail.Recruiters {
+			recruiters = append(recruiters, struct {
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			}{
+				Name:  recruiter.FirstName + " " + recruiter.LastName,
+				Email: recruiter.Email,
+			})
 		}
 
-		allPlacements = append(allPlacements, response.Items...)
+		//data.Recruiters = recruiters
 
-		totalPlacements = response.TotalCount
+		i++
 
-		if response.TotalCount <= 1000 || response.Links.Next == "" {
-			break
-		}
+		lists = append(lists, data)
 
-		fmt.Printf("Moving to Page %d\n", page)
-
-		nextURL, err := url.Parse(response.Links.Next)
-
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse next page URL: %w", err)
-		}
-		baseURL = nextURL
-
-		fmt.Println("Sleeping for 5 seconds...")
-		time.Sleep(5 * time.Second)
-
-		page++
+		fmt.Printf("%d. %d: %s\n", i, placementDetail.PlacementID, placementDetail.Job.JobTitle)
 	}
 
-	utils.EnhancePlacement(allPlacements)
+	utils.SavePlacementDetailToFile(lists, refreshToken)
 
-	fmt.Printf("Total Placements Fetched: %d\n", totalPlacements)
-
-	return allPlacements, nil
+	return data
 }

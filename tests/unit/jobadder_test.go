@@ -2,6 +2,7 @@ package unit
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -44,7 +45,12 @@ func TestJobAdderClient_Do(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -86,16 +92,17 @@ func TestJobAdderClient_GetPlacements(t *testing.T) {
 
 	client := api.NewJobAdderClient()
 	client.ApiUrl = server.URL + "/v2/"
+	client.AccessToken = "test123"
 
-	placements, err := client.GetPlacements()
-	if err != nil {
-		t.Fatal(err)
-	}
+	placements, err := api.GetPlacements(client.ApiUrl, client.AccessToken)
 
 	expectedPlacements := []models.Placement{
 		{PlacementID: 1, JobTitle: "Job 1"},
 		{PlacementID: 2, JobTitle: "Job 2"},
 	}
+
+	assert.Nil(t, err)
+	assert.Equal(t, 2, len(placements))
 
 	if !reflect.DeepEqual(expectedPlacements, placements) {
 		t.Errorf("Expected placements do not match actual placements")
