@@ -1,11 +1,6 @@
 name: Test
 
 on:
-  pull_request_target:
-    branches:
-      - dev*
-      - master*
-
   pull_request:
     branches:
       - bugfix/*
