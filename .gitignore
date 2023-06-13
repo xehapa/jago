@@ -19,9 +19,8 @@
 # vendor/
 
 # Go workspace file
-go.work
-
-project_structure.txt
-
 .env
 !.env.test
+go.work
+project_structure.txt
+data/

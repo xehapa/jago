@@ -3,25 +3,15 @@ package runner
 import (
 	"bufio"
 	"fmt"
+	"github.com/xehapa/jago/utils"
 	"log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/xehapa/jago/api"
+	"github.com/xehapa/jago/models"
 )
-
-type AccessTokenProvider interface {
-	GetAccessToken(refreshToken string) (*RefreshTokenResponse, error)
-}
-
-type RefreshTokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int    `json:"expires_in"`
-	ApiUrl       string `json:"api"`
-	RefreshToken string `json:"refresh_token"`
-}
 
 func RunMain() {
 	// Prompt user for refresh token
@@ -40,11 +30,13 @@ func RunMain() {
 	client.ApiUrl = refreshTokenResponse.ApiUrl
 	client.AccessToken = refreshTokenResponse.AccessToken
 
-	_, err = client.GetPlacements()
+	var placements []models.Placement
+	placements = client.GetPlacements()
 
-	if err != nil {
-		log.Fatalf("failed to get placements: %v", err)
-	}
+	var enhancedPlacements []models.EnhancedPlacement
+	enhancedPlacements = utils.EnhancePlacement(placements)
+
+	client.GetPlacementDetail(enhancedPlacements, refreshToken)
 
 	elapsedTime := time.Since(timeStart).Round(time.Second)
 
