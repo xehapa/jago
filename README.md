@@ -1,6 +1,6 @@
 # Jobadder API Utility Written In Go
 
-[![Test](https://github.com/xehapa/jago/actions/workflows/pull_request.yml/badge.svg?branch=dev)](https://github.com/xehapa/jago/actions/workflows/pull_request.yml)
+[![Test](https://github.com/xehapa/jago/actions/workflows/pull_request.yml/badge.svg?branch=dev&event=pull_request)](https://github.com/xehapa/jago/actions/workflows/pull_request.yml)
 
 ## Folder Structure
 ```
